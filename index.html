@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English to Finnish Translator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 90%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>English to Finnish Translator</h1>
+        <textarea id="from_text" placeholder="Enter text in English"></textarea>
+        <textarea id="to_text" placeholder="Translated text will appear here..." readonly></textarea>
+        <button id="translate_btn">Translate</button>
+    </div>
+
+    <script>
+        const fromText = document.getElementById("from_text");
+        const toText = document.getElementById("to_text");
+        const translateBtn = document.getElementById("translate_btn");
+
+        translateBtn.addEventListener("click", async () => {
+            const text = fromText.value.trim();
+            if (!text) {
+                alert("Please enter text to translate.");
+                return;
+            }
+
+            try {
+                const response = await fetch("/translate", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({ text }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.error}`);
+                    return;
+                }
+
+                const data = await response.json();
+                toText.value = data.translated_text;
+            } catch (error) {
+                alert("Failed to connect to the server. Please try again.");
+            }
+        });
+    </script>
+</body>
+</html>
